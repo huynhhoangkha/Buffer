@@ -63,6 +63,10 @@ public:
 	virtual bool getLong(int offset, long* outputLong) = 0;					//Return an 8-byte long starting from the offset index byte
 	virtual bool getDouble(int offset, double* outputDouble) = 0;			//Return an 8-byte double starting from the offset index byte
 	virtual bool getMemoryBlock(void* memPtr, int offset, int size) = 0;	//Copy 'size' bytes from buffer into a memory block pointed by memPtr
+	virtual bool writeInt(int offset, int data) = 0;			//Write an int value into the buffer at 'offset' position
+	virtual bool writeFloat(int offset, float data) = 0;		//Write an float value into the buffer at 'offset' position
+	virtual bool writeLong(int offset, long data) = 0;			//Write an long value into the buffer at 'offset' position
+	virtual bool writeDouble(int offset, double data) = 0;		//Write an double value into the buffer at 'offset' position
 protected:
 	int capacity;								//Buffer's capacity
 	int size;									//Number of bytes stored in the buffer	
@@ -95,8 +99,32 @@ public:
 	bool getLong(int offset, long* outputLong);					//Return an 8-byte long starting from the offset index byte
 	bool getDouble(int offset, double* outputDouble);			//Return an 8-byte double starting from the offset index byte
 	bool getMemoryBlock(void* memPtr, int offset, int size);	//Copy 'size' bytes from buffer into a memory block pointed by memPtr
-	template <typename T> bool getPrimity(int offset, T* outputObject);	//Get any object, return result via an object pointer
+	bool writeInt(int offset, int data);			//Write an int value into the buffer at 'offset' position
+	bool writeFloat(int offset, float data);		//Write an float value into the buffer at 'offset' position
+	bool writeLong(int offset, long data);			//Write an long value into the buffer at 'offset' position
+	bool writeDouble(int offset, double data);		//Write an double value into the buffer at 'offset' position
+	template <typename T> bool writePrimity(int offset, T data);		//write any primitive object into buffer at 'offset' position
+	template <typename T> bool getPrimity(int offset, T* outputObject);	//Get any primitive object, return result via an object pointer
 };
+
+template<typename T>
+inline bool ArrayBuffer::writePrimity(int offset, T data) {
+	if (offset < 0 || offset + sizeof(T) > this->capacity || offset > this->size) return false;
+	if (this->endian == NOT_SET) {
+		BufferException bE(NOT_SET_ENDIAN, "Please set Endian to be BIG_ENDIAN or LITTLE_ENDIAN according to your system.");
+		throw bE;
+	}
+	if (this->endian == BIG_ENDIAN) {
+		uint8_t* ptr = (uint8_t*)&data;
+		for (int i = 0; i < sizeof(T); i++) this->arrayPointer[offset++] = *(ptr++);
+	}
+	else if (this->endian == LITTLE_ENDIAN) {
+		uint8_t* ptr = ((uint8_t*)&data) + sizeof(T) - 1;
+		for (int i = 0; i < sizeof(T); i++) this->arrayPointer[offset++] = *(ptr--);
+	}
+	if (offset > this->size) this->size = offset;
+	return true;
+}
 
 template<typename T>
 inline bool ArrayBuffer::getPrimity(int offset, T * outputObject) {

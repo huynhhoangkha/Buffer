@@ -7,11 +7,11 @@ using namespace std;
 int main() {
 	string msg = "Huynh Hoang Kha";
 	try {
-		QueueArrayBuffer aSB(msg, LITTLE_ENDIAN);
-		cout << aSB.getInt(0) << endl;
-		aSB[3] = 'U';
-		cout << aSB.getString() << endl;
-		cout << aSB.getByte(3) << endl;
+		ArrayBuffer aSB(msg, LITTLE_ENDIAN);
+		aSB.writeInt(3, 1511449);
+		cout << aSB.getInt(3) << endl;
+		//cout << aSB.getString() << endl;
+		//cout << aSB.getByte(3) << endl;
 	}
 	catch (BufferException bE) {
 		cout << bE.getMessage() << endl;

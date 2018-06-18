@@ -226,6 +226,11 @@ bool ArrayBuffer::getMemoryBlock(void * memPtr, int offset, int size) {
 	return true;
 }
 
+bool ArrayBuffer::writeInt(int offset, int data) {return this->writePrimity(offset, data);}
+bool ArrayBuffer::writeFloat(int offset, float data) { return this->writePrimity(offset, data); }
+bool ArrayBuffer::writeLong(int offset, long data) { return this->writePrimity(offset, data); }
+bool ArrayBuffer::writeDouble(int offset, double data) { return this->writePrimity(offset, data); }
+
 //Endsection: ArrayBuffer implementation
 
 //------------------------------------------------------------------------------------------------------------
