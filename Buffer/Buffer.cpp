@@ -5,6 +5,7 @@
 #pragma warning (disable: 4018) //This warning is in control!
 #include "Buffer.h"
 
+#pragma region BufferException implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: BufferException implementation
 BufferException::BufferException(int code, const char* message) {
@@ -25,7 +26,9 @@ BufferException::~BufferException() { delete[] this->msgPtr;}
 string BufferException::getMessage() { return string(msgPtr);}
 int BufferException::getCode() { return this->exceptionCode;}
 //Endsection: BufferException implementation
+#pragma endregion BufferException implementation
 
+#pragma region Some buffer methods implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: Some buffer methods implementation
 int Buffer::getCapacity() {return this->capacity;}
@@ -41,7 +44,9 @@ bool Buffer::getByte(int index, uint8_t *outputByte) {
 }
 bool Buffer::getChar(int index, char *outputChar) { return getByte(index, (uint8_t*)outputChar); }
 //Endsection: Some buffer methods implementation
+#pragma endregion Some buffer methods implementation
 
+#pragma region ArrayBuffer implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: ArrayBuffer implementation
 ArrayBuffer::ArrayBuffer(int capacity, Endian systemEndian) {
@@ -230,9 +235,10 @@ bool ArrayBuffer::writeInt(int offset, int data) {return this->writePrimity(offs
 bool ArrayBuffer::writeFloat(int offset, float data) { return this->writePrimity(offset, data); }
 bool ArrayBuffer::writeLong(int offset, long data) { return this->writePrimity(offset, data); }
 bool ArrayBuffer::writeDouble(int offset, double data) { return this->writePrimity(offset, data); }
-
 //Endsection: ArrayBuffer implementation
+#pragma endregion ArrayBuffer implementation
 
+#pragma region StackArrayBuffer implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: StackArrayBuffer implementation
 StackArrayBuffer::~StackArrayBuffer() {
@@ -286,7 +292,9 @@ bool StackArrayBuffer::pushByte(uint8_t dataByte) {
 
 bool StackArrayBuffer::pushChar(char dataChar) { return pushByte((uint8_t)dataChar); }
 //Endsection: StackArrayBuffer implementation
+#pragma endregion StackArrayBuffer implementation
 
+#pragma region QueueArrayBuffer implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: QueueArrayBuffer implementation
 QueueArrayBuffer::QueueArrayBuffer(int capacity, Endian systemEndian) : ArrayBuffer(capacity, systemEndian) {
@@ -342,9 +350,8 @@ bool QueueArrayBuffer::deQueueChar(char * outputChar) {
 	//
 	return false;
 }
-
-
 //Endsection: QueueArrayBuffer implementation
+#pragma endregion QueueArrayBuffer implementation
 
 //------------------------------------------------------------------------------------------------------------
 //Section:  implementation
