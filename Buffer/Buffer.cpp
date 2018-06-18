@@ -256,8 +256,6 @@ uint8_t StackArrayBuffer::popByte() {
 	return this->arrayPointer[this->size-- - 1];
 }
 
-char StackArrayBuffer::popChar() {return (char)this->popByte(); }
-
 uint8_t StackArrayBuffer::topByte() {
 	if (this->size == 0) {
 		BufferException bE(ACCESS_TO_EMPTY_STACK, "Can not get top, stack empty.");
@@ -266,15 +264,11 @@ uint8_t StackArrayBuffer::topByte() {
 	return this->arrayPointer[this->size - 1];
 }
 
-char StackArrayBuffer::topChar() { return (char)this->topByte(); }
-
 bool StackArrayBuffer::popByte(uint8_t * outputByte) {
 	if (size == 0) return false;
 	*outputByte = this->arrayPointer[this->size-- - 1];
 	return true;
 }
-
-bool StackArrayBuffer::popChar(char * outputChar) {	return this->popByte((uint8_t*)outputChar); }
 
 bool StackArrayBuffer::topByte(uint8_t * outputByte) {
 	if (size == 0) return false;
@@ -282,15 +276,11 @@ bool StackArrayBuffer::topByte(uint8_t * outputByte) {
 	return true;
 }
 
-bool StackArrayBuffer::topChar(char * outputChar) { return this->topByte((uint8_t*)outputChar); }
-
 bool StackArrayBuffer::pushByte(uint8_t dataByte) {
 	if (this->isFull()) return false;
 	this->arrayPointer[size++] = dataByte;
 	return true;
 }
-
-bool StackArrayBuffer::pushChar(char dataChar) { return pushByte((uint8_t)dataChar); }
 //Endsection: StackArrayBuffer implementation
 #pragma endregion StackArrayBuffer implementation
 
@@ -326,27 +316,12 @@ uint8_t QueueArrayBuffer::deQueueByte() {
 	return uint8_t();
 }
 
-char QueueArrayBuffer::deQueueChar() {
-	//
-	return 0;
-}
-
 bool QueueArrayBuffer::enQueueByte(uint8_t dataByte) {
 	//
 	return false;
 }
 
-bool QueueArrayBuffer::enQueueChar(char dataChar) {
-	//
-	return false;
-}
-
 bool QueueArrayBuffer::deQueueByte(uint8_t * outputByte) {
-	//
-	return false;
-}
-
-bool QueueArrayBuffer::deQueueChar(char * outputChar) {
 	//
 	return false;
 }

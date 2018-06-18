@@ -48,7 +48,7 @@ public:
 	virtual void clean() = 0;					//Clean the buffer's content
 	//Methods that will throw exception when error occur (in the case of invalid index/offset)
 	virtual uint8_t getByte(int index);			//Return the byte at index
-	virtual char getChar(int index);			//Return the byte at index as a character
+	char getChar(int index);			//Return the byte at index as a character
 	virtual string getString() = 0;				//Return the whole data as std::string object
 	virtual int getInt(int offset) = 0;			//Return an 4-byte integer starting from the offset index byte
 	virtual float getFloat(int offset) = 0;		//Return an 4-byte float starting from the offset index byte
@@ -57,7 +57,7 @@ public:
 	//Methods that return false when error occur (in the case of invalid index/offset), output value via a pointer
 	virtual uint8_t& operator[](int index) = 0;								//Return reference to the byte at index
 	virtual bool getByte(int index, uint8_t* outputByte);					//Return the byte at index
-	virtual bool getChar(int index, char* outputChar);						//Return the byte at index as a character
+	bool getChar(int index, char* outputChar);						//Return the byte at index as a character
 	virtual bool getInt(int offset, int* outputInt) = 0;					//Return an 4-byte integer starting from the offset index byte
 	virtual bool getFloat(int offset, float* outputFloat) = 0;				//Return an 4-byte float starting from the offset index byte
 	virtual bool getLong(int offset, long* outputLong) = 0;					//Return an 8-byte long starting from the offset index byte
@@ -81,32 +81,35 @@ public:
 	ArrayBuffer(int capacity, Endian systemEndian);
 	//Construct this ArrayStackBuffer with the size 'capacity' and then copy 'dataSize' byte(s) from memory block pointed by memPtr into buffer.
 	ArrayBuffer(void* memPtr, int capacity, int dataSize, Endian systemEndian);
+	//Construct this buffer to be enough to store the 'inputString'
 	ArrayBuffer(string inputString, Endian systemEndian);
+	//Construct this buffer with the size 'capacity' and then store the inputString into it.
 	ArrayBuffer(int capacity, string inputString, Endian systemEndian);
 	//Free up all allocated memory
 	~ArrayBuffer();
-	void clean();									//Clean the buffer's content
+	virtual void clean();									//Clean the buffer's content
 	//Methods that will throw exception when error occur (in the case of invalid index/offset)
-	uint8_t& operator[](int index);					//Return reference to the byte at index
-	string getString();								//Return the whole data as std::string object
-	int getInt(int offset);							//Return an 4-byte integer starting from the offset index byte
-	float getFloat(int offset);						//Return an 4-byte float starting from the offset index byte
-	long getLong(int offset);						//Return an 8-byte long starting from the offset index byte
-	double getDouble(int offset);					//Return an 8-byte double starting from the offset index byte
+	virtual uint8_t& operator[](int index);					//Return reference to the byte at index
+	virtual string getString();								//Return the whole data as std::string object
+	virtual int getInt(int offset);							//Return an 4-byte integer starting from the offset index byte
+	virtual float getFloat(int offset);						//Return an 4-byte float starting from the offset index byte
+	virtual long getLong(int offset);						//Return an 8-byte long starting from the offset index byte
+	virtual double getDouble(int offset);					//Return an 8-byte double starting from the offset index byte
 	//Methods that return false when error occur (in the case of invalid index/offset), output value via a pointer
-	bool getInt(int offset, int* outputInt);					//Return an 4-byte integer starting from the offset index byte
-	bool getFloat(int offset, float* outputFloat);				//Return an 4-byte float starting from the offset index byte
-	bool getLong(int offset, long* outputLong);					//Return an 8-byte long starting from the offset index byte
-	bool getDouble(int offset, double* outputDouble);			//Return an 8-byte double starting from the offset index byte
-	bool getMemoryBlock(void* memPtr, int offset, int size);	//Copy 'size' bytes from buffer into a memory block pointed by memPtr
-	bool writeInt(int offset, int data);			//Write an int value into the buffer at 'offset' position
-	bool writeFloat(int offset, float data);		//Write an float value into the buffer at 'offset' position
-	bool writeLong(int offset, long data);			//Write an long value into the buffer at 'offset' position
-	bool writeDouble(int offset, double data);		//Write an double value into the buffer at 'offset' position
+	virtual bool getInt(int offset, int* outputInt);					//Return an 4-byte integer starting from the offset index byte
+	virtual bool getFloat(int offset, float* outputFloat);				//Return an 4-byte float starting from the offset index byte
+	virtual bool getLong(int offset, long* outputLong);					//Return an 8-byte long starting from the offset index byte
+	virtual bool getDouble(int offset, double* outputDouble);			//Return an 8-byte double starting from the offset index byte
+	virtual bool getMemoryBlock(void* memPtr, int offset, int size);	//Copy 'size' bytes from buffer into a memory block pointed by memPtr
+	virtual bool writeInt(int offset, int data);			//Write an int value into the buffer at 'offset' position
+	virtual bool writeFloat(int offset, float data);		//Write an float value into the buffer at 'offset' position
+	virtual bool writeLong(int offset, long data);			//Write an long value into the buffer at 'offset' position
+	virtual bool writeDouble(int offset, double data);		//Write an double value into the buffer at 'offset' position
 	template <typename T> bool writePrimity(int offset, T data);		//write any primitive object into buffer at 'offset' position
 	template <typename T> bool getPrimity(int offset, T* outputObject);	//Get any primitive object, return result via an object pointer
 };
 
+#pragma region templates
 template<typename T>
 inline bool ArrayBuffer::writePrimity(int offset, T data) {
 	if (offset < 0 || offset + sizeof(T) > this->capacity || offset > this->size) return false;
@@ -134,6 +137,7 @@ inline bool ArrayBuffer::getPrimity(int offset, T * outputObject) {
 	else if (this->endian == LITTLE_ENDIAN) for (int i = sizeof(T) - 1; i >= 0; i--) *(ptr++) = this->arrayPointer[offset + i];
 	return true;
 }
+#pragma endregion templates
 
 class StackArrayBuffer : public ArrayBuffer, public ByteStack {
 public:
@@ -149,16 +153,11 @@ public:
 	~StackArrayBuffer();
 	//Methods that will throw exception when error occur (in the case of empty/full stack errors)
 	uint8_t popByte();		//Return the byte at top of stack and then remove it from stack
-	char popChar();			//Return the byte at top of stack as a character and then remove it from stack
 	uint8_t topByte();		//Return the byte at top of stack without removing it from stack
-	char topChar();			//Return the byte at top of stack as a character without removing it from stack
 	//Methods that return false when error occur (in the case of empty/full stack errors), output value via a pointer
 	bool popByte(uint8_t* outputByte);	//Return the byte at top of stack and then remove it from stack
-	bool popChar(char* outputChar);		//Return the byte at top of stack as a character and then remove it from stack
 	bool topByte(uint8_t* outputByte);	//Return the byte at top of stack without removing it from stack
-	bool topChar(char* outputChar);		//Return the byte at top of stack as a character without removing it from stack
 	bool pushByte(uint8_t dataByte);	//Push a byte to stack, return true if insertion was OK
-	bool pushChar(char dataChar);		//Push a character to stack, return true if insertion was OK
 };
 
 class QueueArrayBuffer :public ArrayBuffer, public ByteQueue {
@@ -176,11 +175,8 @@ public:
 	~QueueArrayBuffer();
 	//Methods that will throw exception when error occur (in the case of empty/full queue errors)
 	uint8_t deQueueByte();					//Return the first-joined byte in the queue and then remove it from the queue
-	char deQueueChar();						//Return the first-joined byte in the queue as a character and then remove it from the queue
 	//Methods that return false when error occur (in the case of empty/full queue errors), output value via a pointer
 	bool enQueueByte(uint8_t dataByte);		//Push a byte to the queue, return true if insertion was OK
-	bool enQueueChar(char dataChar);		//Push a character to the queue, return true if insertion was OK
 	bool deQueueByte(uint8_t* outputByte);	//Return the first-joined byte in the queue and then remove it from the queue
-	bool deQueueChar(char* outputChar);		//Return the first-joined byte in the queue as a character and then remove it from the queue
 };
 #endif // !_BUFFER_H_
