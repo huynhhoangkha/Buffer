@@ -118,6 +118,7 @@
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ByteQueue.h" />
     <ClInclude Include="ByteStack.h" />
+    <ClInclude Include="Endian.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Buffer.cpp" />

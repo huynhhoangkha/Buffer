@@ -24,6 +24,9 @@
     <ClInclude Include="ByteQueue.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Endian.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

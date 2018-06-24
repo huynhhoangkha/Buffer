@@ -1,9 +1,6 @@
 #include "ByteStack.h"
 
-char ByteStack::popChar()
-{
-	return 0;
-}
+char ByteStack::popChar() { return (char)this->popByte(); }
 
 int ByteStack::popInt()
 {

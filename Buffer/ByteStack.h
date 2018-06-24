@@ -3,8 +3,9 @@
 #ifndef _BYTE_STACK_H_
 #define _BYTE_STACK_H_
 #include <cstdint>
+#include"Endian.h"
 
-class ByteStack {
+class ByteStack{
 public:
 	//Methods that will throw exception when error occur (in the case of empty/full stack errors)
 	virtual uint8_t popByte() = 0;					//Return the byte at top of stack and then remove it from stack

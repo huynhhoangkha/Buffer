@@ -8,6 +8,7 @@
 #include <string>
 #include "ByteStack.h"
 #include "ByteQueue.h"
+#include "Endian.h"
 using namespace std;
 
 enum ExceptionErrorCode {
@@ -20,12 +21,6 @@ enum ExceptionErrorCode {
 	POP_FROM_EMPTY_STACK,
 	ACCESS_TO_EMPTY_STACK,
 	PUSH_TO_FULL_STACK
-};
-
-enum Endian {
-	NOT_SET,
-	BIG_ENDIAN,
-	LITTLE_ENDIAN
 };
 
 class BufferException {
@@ -70,7 +65,7 @@ public:
 protected:
 	int capacity;								//Buffer's capacity
 	int size;									//Number of bytes stored in the buffer	
-	Endian endian;								//System endianness, should be NOT_SET by default
+	Endian endian;								//System endian
 };
 
 class ArrayBuffer :public Buffer {

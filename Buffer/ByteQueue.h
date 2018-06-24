@@ -3,6 +3,7 @@
 #ifndef _BYTE_QUEUE_H_
 #define _BYTE_QUEUE_H_
 #include <cstdint>
+#include "Endian.h"
 
 class ByteQueue {
 public:
