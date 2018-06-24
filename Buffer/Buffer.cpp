@@ -247,40 +247,6 @@ StackArrayBuffer::~StackArrayBuffer() {
 		this->arrayPointer = NULL;
 	}
 }
-
-uint8_t StackArrayBuffer::popByte() {
-	if (this->size == 0) {
-		BufferException bE(POP_FROM_EMPTY_STACK, "Can not pop, stack empty.");
-		throw bE;
-	}
-	return this->arrayPointer[this->size-- - 1];
-}
-
-uint8_t StackArrayBuffer::topByte() {
-	if (this->size == 0) {
-		BufferException bE(ACCESS_TO_EMPTY_STACK, "Can not get top, stack empty.");
-		throw bE;
-	}
-	return this->arrayPointer[this->size - 1];
-}
-
-bool StackArrayBuffer::popByte(uint8_t * outputByte) {
-	if (size == 0) return false;
-	*outputByte = this->arrayPointer[this->size-- - 1];
-	return true;
-}
-
-bool StackArrayBuffer::topByte(uint8_t * outputByte) {
-	if (size == 0) return false;
-	*outputByte = this->arrayPointer[this->size - 1];
-	return true;
-}
-
-bool StackArrayBuffer::pushByte(uint8_t dataByte) {
-	if (this->isFull()) return false;
-	this->arrayPointer[size++] = dataByte;
-	return true;
-}
 //Endsection: StackArrayBuffer implementation
 #pragma endregion StackArrayBuffer implementation
 

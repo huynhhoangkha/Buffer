@@ -7,11 +7,23 @@ using namespace std;
 int main() {
 	string msg = "Huynh Hoang Kha";
 	try {
-		ArrayBuffer aSB(msg, LITTLE_ENDIAN);
-		aSB.writeInt(3, 1511449);
-		cout << aSB.getInt(3) << endl;
-		//cout << aSB.getString() << endl;
-		//cout << aSB.getByte(3) << endl;
+		StackArrayBuffer aSB(msg, LITTLE_ENDIAN);
+		cout << aSB.getString() << endl;
+		cout << aSB.getCapacity() << endl;
+		cout << aSB.getSize() << endl;
+		aSB.push('C');
+		cout << aSB.getString() << endl;
+		cout << aSB.getCapacity() << endl;
+		cout << aSB.getSize() << endl;
+		char c;
+		cout << aSB.top(&c) << endl;
+		cout << aSB.getString() << endl;
+		cout << aSB.getCapacity() << endl;
+		cout << aSB.getSize() << endl;
+		cout << aSB.pop(&c) << endl;
+		cout << aSB.getString() << endl;
+		cout << aSB.getCapacity() << endl;
+		cout << aSB.getSize() << endl;
 	}
 	catch (BufferException bE) {
 		cout << bE.getMessage() << endl;

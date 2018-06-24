@@ -6,10 +6,15 @@
 #define _BUFFER_H_
 #include <cstdint>
 #include <string>
-#include "ByteStack.h"
-#include "ByteQueue.h"
-#include "Endian.h"
+#include "Stack.h"
+#include "Queue.h"
 using namespace std;
+
+enum Endian {
+	NOT_SET,
+	BIG_ENDIAN,
+	LITTLE_ENDIAN
+};
 
 enum ExceptionErrorCode {
 	NEGATIVE_CAPACITY,
@@ -20,7 +25,10 @@ enum ExceptionErrorCode {
 	NOT_SET_ENDIAN,
 	POP_FROM_EMPTY_STACK,
 	ACCESS_TO_EMPTY_STACK,
-	PUSH_TO_FULL_STACK
+	PUSH_TO_FULL_STACK,
+	NOT_ENOUGH_DATA_TO_POP,
+	NOT_ENOUGH_DATA_TO_TOP,
+	NOT_ENOUGH_SPACE_TO_PUSH
 };
 
 class BufferException {
@@ -104,7 +112,7 @@ public:
 	template <typename T> bool getPrimity(int offset, T* outputObject);	//Get any primitive object, return result via an object pointer
 };
 
-#pragma region templates
+#pragma region ArrayBuffer templates
 template<typename T>
 inline bool ArrayBuffer::writePrimity(int offset, T data) {
 	if (offset < 0 || offset + sizeof(T) > this->capacity || offset > this->size) return false;
@@ -132,30 +140,90 @@ inline bool ArrayBuffer::getPrimity(int offset, T * outputObject) {
 	else if (this->endian == LITTLE_ENDIAN) for (int i = sizeof(T) - 1; i >= 0; i--) *(ptr++) = this->arrayPointer[offset + i];
 	return true;
 }
-#pragma endregion templates
+#pragma endregion ArrayBuffer templates
 
-class StackArrayBuffer : public ArrayBuffer, public ByteStack {
+class StackArrayBuffer : public ArrayBuffer, public Stack<uint8_t> {
 public:
 	//Construct this ArrayStackBuffer with the size 'capacity'
 	StackArrayBuffer(int capacity, Endian systemEndian) :ArrayBuffer(capacity, systemEndian) {};
 	//Construct this ArrayStackBuffer with the size 'capacity' and then copy 'dataSize' byte(s) from memory block pointed by memPtr into buffer.
-	StackArrayBuffer(void* memPtr, int capacity, int dataSize, Endian systemEndian): ArrayBuffer(memPtr, capacity, dataSize, systemEndian) {};
+	StackArrayBuffer(void* memPtr, int capacity, int dataSize, Endian systemEndian) : ArrayBuffer(memPtr, capacity, dataSize, systemEndian) {};
 	//Construct this ArrayStackBuffer to be enough to store the input string
 	StackArrayBuffer(string inputString, Endian systemEndian) :ArrayBuffer(inputString, systemEndian) {};
 	//Construct this ArrayStackBuffer with the size 'capacity' and then store input string into it.
-	StackArrayBuffer(int capacity, string inputString, Endian systemEndian) :ArrayBuffer( capacity, inputString, systemEndian) {};
+	StackArrayBuffer(int capacity, string inputString, Endian systemEndian) :ArrayBuffer(capacity, inputString, systemEndian) {};
 	//Destructor: Unallocate all memory.
 	~StackArrayBuffer();
 	//Methods that will throw exception when error occur (in the case of empty/full stack errors)
-	uint8_t popByte();		//Return the byte at top of stack and then remove it from stack
-	uint8_t topByte();		//Return the byte at top of stack without removing it from stack
+	template <typename T> T pop();		//Return the primity at top of stack and then remove it from stack
+	template <typename T> T top();		//Return the primity at top of stack without removing it from stack
 	//Methods that return false when error occur (in the case of empty/full stack errors), output value via a pointer
-	bool popByte(uint8_t* outputByte);	//Return the byte at top of stack and then remove it from stack
-	bool topByte(uint8_t* outputByte);	//Return the byte at top of stack without removing it from stack
-	bool pushByte(uint8_t dataByte);	//Push a byte to stack, return true if insertion was OK
+	template <typename T> bool pop(T* output);	//Return the primity at top of stack and then remove it from stack
+	template <typename T> bool top(T* output);	//Return the primity at top of stack without removing it from stack
+	template <typename T> bool push(T input);	//Push a primity to stack, return true if insertion was OK
+	uint8_t pop() { return this->pop<uint8_t>(); }
+	uint8_t top() { return this->top<uint8_t>(); }
+	bool pop(uint8_t* output) { return this->pop(output); }
+	bool top(uint8_t* output) { return this->top(output); }
+	bool push(uint8_t input) { return this->push(input); }
+	
 };
 
-class QueueArrayBuffer :public ArrayBuffer, public ByteQueue {
+#pragma region StackArrayBuffer templates
+template<typename T>
+inline T StackArrayBuffer::pop() {
+	int offset = this->size - sizeof(T);
+	if (offset < 0) {
+		BufferException bE(NOT_ENOUGH_DATA_TO_POP, "Data in the stack is not enough to pop");
+		throw bE;
+	}
+	T output;
+	this->getPrimity(offset, &output);
+	this->size -= sizeof(T);
+	this->arrayPointer[this->size] = '\0';
+	return output;
+}
+
+template<typename T>
+inline T StackArrayBuffer::top() {
+	int offset = this->size - sizeof(T);
+	if (offset < 0) {
+		BufferException bE(NOT_ENOUGH_DATA_TO_POP, "Data in the stack is not enough to pop");
+		throw bE;
+	}
+	T output;
+	this->getPrimity(offset, &output);
+	return output;
+}
+
+template<typename T>
+inline bool StackArrayBuffer::pop(T * output) {
+	int offset = this->size - sizeof(T);
+	if (offset < 0) return false;
+	this->getPrimity(offset, output);
+	this->size -= sizeof(T);
+	this->arrayPointer[this->size] = '\0';
+	return true;
+}
+
+template<typename T>
+inline bool StackArrayBuffer::top(T * output) {
+	int offset = this->size - sizeof(T);
+	if (offset < 0) return false;
+	this->getPrimity(offset, output);
+	return true;
+}
+
+template<typename T>
+inline bool StackArrayBuffer::push(T dataByte) {
+	if (this->capacity - this->size < sizeof(T)) return false;
+	this->writePrimity(this->size, dataByte);
+	return true;
+}
+
+#pragma endregion StackArrayBuffer templates
+
+class QueueArrayBuffer :public ArrayBuffer, public Queue<uint8_t> {
 	int firstIndex, lastIndex;
 public:
 	//Construct this ArrayStackBuffer with the size 'capacity'

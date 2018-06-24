@@ -18,13 +18,10 @@
     <ClInclude Include="Buffer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ByteStack.h">
+    <ClInclude Include="Stack.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ByteQueue.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Endian.h">
+    <ClInclude Include="Queue.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -33,12 +30,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ByteStack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ByteQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
