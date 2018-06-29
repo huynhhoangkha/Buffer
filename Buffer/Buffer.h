@@ -161,12 +161,42 @@ public:
 	template <typename T> bool pop(T* output);	//Return the primity at top of stack and then remove it from stack
 	template <typename T> bool top(T* output);	//Return the primity at top of stack without removing it from stack
 	template <typename T> bool push(T input);	//Push a primity to stack, return true if insertion was OK
-	uint8_t pop() { return this->pop<uint8_t>(); }
-	uint8_t top() { return this->top<uint8_t>(); }
-	bool pop(uint8_t* output) { return this->pop(output); }
-	bool top(uint8_t* output) { return this->top(output); }
-	bool push(uint8_t input) { return this->push(input); }
-	
+	//Implement compulsory methods in the stack interface
+	uint8_t pop() { return this->pop<uint8_t>(); }				//implement the 1-byte pop() method from stack interface
+	uint8_t top() { return this->top<uint8_t>(); }				//implement the 1-byte top() method from stack interface
+	bool pop(uint8_t* output) { return this->pop(output); }		//implement the 1-byte pop() method from stack interface
+	bool top(uint8_t* output) { return this->top(output); }		//implement the 1-byte top() method from stack interface
+	bool push(uint8_t input) { return this->push(input); }		//implement the 1-byte push() method from stack interface
+	//Stack methods implementation for char
+	char popChar() { return this->pop<char>(); }				//method to pop a character using: T pop() template
+	char topChar() { return this->top<char>(); }				//method to get a top character using: T top() template
+	bool popChar(char* output) { return this->pop(output); }	//method to pop a character using: bool pop(T* output) template
+	bool topChar(char* output) { return this->top(output); }	//method to get a top character using: bool top(T* output) template
+	bool pushChar(char input) { return this->push(input); }		//method to push a character using: bool push(T input) template
+	//Stack methods implementation for int						
+	int popInt() { return this->pop<int>(); }					//method to pop an int using: T pop() template
+	int topInt() { return this->top<int>(); }					//method to get a top int using: T top() template
+	bool popInt(int* output) { return this->pop(output); }		//method to pop an int using: bool pop(T* output) template
+	bool topInt(int* output) { return this->top(output); }		//method to get a top int using: bool top(T* output) template
+	bool pushInt(int input) { return this->push(input); }		//method to push an int using: bool push(T input) template
+	//Stack methods implementation for float
+	float popFloat() { return this->pop<float>(); }				//method to pop a float using: T pop() template
+	float topFloat() { return this->top<float>(); }				//method to get a top float using: T top() template
+	bool popFloat(float* output) { return this->pop(output); }	//method to pop a float using: bool pop(T* output) template
+	bool topFloat(float* output) { return this->top(output); }	//method to get a top float using: bool top(T* output) template
+	bool pushFloat(float input) { return this->push(input); }	//method to push a float using: bool push(T input) template
+	//Stack methods implementation for long
+	long popLong() { return this->pop<long>(); }				//method to pop a long using: T pop() template
+	long topLong() { return this->top<long>(); }				//method to get a top long using: T top() template
+	bool popLong(long* output) { return this->pop(output); }	//method to pop a long using: bool pop(T* output) template
+	bool topLong(long* output) { return this->top(output); }	//method to get a top long using: bool top(T* output) template
+	bool pushLong(long input) { return this->push(input); }		//method to push a long using: bool push(T input) template
+	//Stack methods implementation for double
+	double popDouble() { return this->pop<double>(); }				//method to pop a double using: T pop() template
+	double topDouble() { return this->top<double>(); }				//method to get a top double using: T top() template
+	bool popDouble(double* output) { return this->pop(output); }	//method to pop a double using: bool pop(T* output) template
+	bool topDouble(double* output) { return this->top(output); }	//method to get a top double using: bool top(T* output) template
+	bool pushDouble(double input) { return this->push(input); }		//method to push a double using: bool push(T input) template
 };
 
 #pragma region StackArrayBuffer templates

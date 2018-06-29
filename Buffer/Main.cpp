@@ -24,6 +24,7 @@ int main() {
 		cout << aSB.getString() << endl;
 		cout << aSB.getCapacity() << endl;
 		cout << aSB.getSize() << endl;
+		cout << aSB.popInt() << endl;
 	}
 	catch (BufferException bE) {
 		cout << bE.getMessage() << endl;
