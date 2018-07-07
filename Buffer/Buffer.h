@@ -28,7 +28,8 @@ enum ExceptionErrorCode {
 	PUSH_TO_FULL_STACK,
 	NOT_ENOUGH_DATA_TO_POP,
 	NOT_ENOUGH_DATA_TO_TOP,
-	NOT_ENOUGH_SPACE_TO_PUSH
+	NOT_ENOUGH_SPACE_TO_PUSH,
+	UNKNOWN_EXCEPTION
 };
 
 class BufferException {
@@ -51,7 +52,7 @@ public:
 	virtual void clean() = 0;					//Clean the buffer's content
 	//Methods that will throw exception when error occur (in the case of invalid index/offset)
 	virtual uint8_t getByte(int index);			//Return the byte at index
-	char getChar(int index);			//Return the byte at index as a character
+	char getChar(int index);					//Return the byte at index as a character
 	virtual string getString() = 0;				//Return the whole data as std::string object
 	virtual int getInt(int offset) = 0;			//Return an 4-byte integer starting from the offset index byte
 	virtual float getFloat(int offset) = 0;		//Return an 4-byte float starting from the offset index byte
@@ -60,7 +61,7 @@ public:
 	//Methods that return false when error occur (in the case of invalid index/offset), output value via a pointer
 	virtual uint8_t& operator[](int index) = 0;								//Return reference to the byte at index
 	virtual bool getByte(int index, uint8_t* outputByte);					//Return the byte at index
-	bool getChar(int index, char* outputChar);						//Return the byte at index as a character
+	bool getChar(int index, char* outputChar);								//Return the byte at index as a character
 	virtual bool getInt(int offset, int* outputInt) = 0;					//Return an 4-byte integer starting from the offset index byte
 	virtual bool getFloat(int offset, float* outputFloat) = 0;				//Return an 4-byte float starting from the offset index byte
 	virtual bool getLong(int offset, long* outputLong) = 0;					//Return an 8-byte long starting from the offset index byte
@@ -104,6 +105,11 @@ public:
 	virtual bool getLong(int offset, long* outputLong);					//Return an 8-byte long starting from the offset index byte
 	virtual bool getDouble(int offset, double* outputDouble);			//Return an 8-byte double starting from the offset index byte
 	virtual bool getMemoryBlock(void* memPtr, int offset, int size);	//Copy 'size' bytes from buffer into a memory block pointed by memPtr
+	/*
+	Be careful when using write methods, they are build base on the writePrimity template,
+	and they just generally write data into the data array. The size of the buffer will not
+	be updated.
+	*/
 	virtual bool writeInt(int offset, int data);			//Write an int value into the buffer at 'offset' position
 	virtual bool writeFloat(int offset, float data);		//Write an float value into the buffer at 'offset' position
 	virtual bool writeLong(int offset, long data);			//Write an long value into the buffer at 'offset' position
@@ -115,7 +121,7 @@ public:
 #pragma region ArrayBuffer templates
 template<typename T>
 inline bool ArrayBuffer::writePrimity(int offset, T data) {
-	if (offset < 0 || offset + sizeof(T) > this->capacity || offset > this->size) return false;
+	if (offset < 0 || offset + sizeof(T) > this->capacity) return false;
 	if (this->endian == NOT_SET) {
 		BufferException bE(NOT_SET_ENDIAN, "Please set Endian to be BIG_ENDIAN or LITTLE_ENDIAN according to your system.");
 		throw bE;
@@ -128,13 +134,12 @@ inline bool ArrayBuffer::writePrimity(int offset, T data) {
 		uint8_t* ptr = ((uint8_t*)&data) + sizeof(T) - 1;
 		for (int i = 0; i < sizeof(T); i++) this->arrayPointer[offset++] = *(ptr--);
 	}
-	if (offset > this->size) this->size = offset;
 	return true;
 }
 
 template<typename T>
 inline bool ArrayBuffer::getPrimity(int offset, T * outputObject) {
-	if (this->endian == NOT_SET || offset < 0 || offset + sizeof(T) > this->size) return false;
+	if (this->endian == NOT_SET || offset < 0 || offset + sizeof(T) > this->capacity) return false;
 	uint8_t* ptr = (uint8_t*)outputObject;
 	if (this->endian == BIG_ENDIAN) for (int i = 0; i < sizeof(T); i++) *(ptr++) = this->arrayPointer[offset + i];
 	else if (this->endian == LITTLE_ENDIAN) for (int i = sizeof(T) - 1; i >= 0; i--) *(ptr++) = this->arrayPointer[offset + i];
@@ -208,10 +213,15 @@ inline T StackArrayBuffer::pop() {
 		throw bE;
 	}
 	T output;
-	this->getPrimity(offset, &output);
-	this->size -= sizeof(T);
-	this->arrayPointer[this->size] = '\0';
-	return output;
+	if (this->getPrimity(offset, &output)) {
+		this->size -= sizeof(T);
+		this->arrayPointer[this->size] = '\0';
+		return output;
+	}
+	else {
+		BufferException bE(UNKNOWN_EXCEPTION, "Something wrong when calling getPrimity method.");
+		throw bE;
+	}
 }
 
 template<typename T>
@@ -222,33 +232,39 @@ inline T StackArrayBuffer::top() {
 		throw bE;
 	}
 	T output;
-	this->getPrimity(offset, &output);
-	return output;
+	if (this->getPrimity(offset, &output)) return output;
+	else {
+		BufferException bE(UNKNOWN_EXCEPTION, "Something wrong when calling getPrimity method.");
+		throw bE;
+	}
 }
 
 template<typename T>
 inline bool StackArrayBuffer::pop(T * output) {
 	int offset = this->size - sizeof(T);
 	if (offset < 0) return false;
-	this->getPrimity(offset, output);
-	this->size -= sizeof(T);
-	this->arrayPointer[this->size] = '\0';
-	return true;
+	if (this->getPrimity(offset, output)) {
+		this->size -= sizeof(T);
+		this->arrayPointer[this->size] = '\0';
+		return true;
+	}
+	else {
+		BufferException bE(UNKNOWN_EXCEPTION, "Something wrong when calling getPrimity method.");
+		throw bE;
+	}
 }
 
 template<typename T>
 inline bool StackArrayBuffer::top(T * output) {
 	int offset = this->size - sizeof(T);
 	if (offset < 0) return false;
-	this->getPrimity(offset, output);
-	return true;
+	return this->getPrimity(offset, output);
 }
 
 template<typename T>
 inline bool StackArrayBuffer::push(T dataByte) {
 	if (this->capacity - this->size < sizeof(T)) return false;
-	this->writePrimity(this->size, dataByte);
-	return true;
+	return this->writePrimity(this->size, dataByte);
 }
 
 #pragma endregion StackArrayBuffer templates

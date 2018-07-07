@@ -162,8 +162,11 @@ int ArrayBuffer::getInt(int offset) {
 		BufferException bE(OUT_OF_RANGE_INDEX, "Index out of range.");
 		throw bE;
 	}
-	this->getPrimity(offset, &data);
-	return data;
+	if (this->getPrimity(offset, &data)) return data;
+	else {
+		BufferException bE(UNKNOWN_EXCEPTION, "Something wrong when calling getPrimity method.");
+		throw bE;
+	}
 }
 
 float ArrayBuffer::getFloat(int offset) {
@@ -180,8 +183,11 @@ float ArrayBuffer::getFloat(int offset) {
 		BufferException bE(OUT_OF_RANGE_INDEX, "Index out of range.");
 		throw bE;
 	}
-	this->getPrimity(offset, &data);
-	return data;
+	if (this->getPrimity(offset, &data)) return data;
+	else {
+		BufferException bE(UNKNOWN_EXCEPTION, "Something wrong when calling getPrimity method.");
+		throw bE;
+	}
 }
 
 long ArrayBuffer::getLong(int offset) {
@@ -198,8 +204,11 @@ long ArrayBuffer::getLong(int offset) {
 		BufferException bE(OUT_OF_RANGE_INDEX, "Index out of range.");
 		throw bE;
 	}
-	this->getPrimity(offset, &data);
-	return data;
+	if (this->getPrimity(offset, &data)) return data;
+	else {
+		BufferException bE(UNKNOWN_EXCEPTION, "Something wrong when calling getPrimity method.");
+		throw bE;
+	}
 }
 
 double ArrayBuffer::getDouble(int offset) {
@@ -216,8 +225,11 @@ double ArrayBuffer::getDouble(int offset) {
 		BufferException bE(OUT_OF_RANGE_INDEX, "Index out of range.");
 		throw bE;
 	}
-	this->getPrimity(offset, &data);
-	return data;
+	if (this->getPrimity(offset, &data)) return data;
+	else {
+		BufferException bE(UNKNOWN_EXCEPTION, "Something wrong when calling getPrimity method.");
+		throw bE;
+	}
 }
 
 bool ArrayBuffer::getInt(int offset, int* outputInt) {return this->getPrimity(offset, outputInt);}
