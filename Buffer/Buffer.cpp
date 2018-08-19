@@ -265,22 +265,12 @@ StackArrayBuffer::~StackArrayBuffer() {
 #pragma region QueueArrayBuffer implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: QueueArrayBuffer implementation
-QueueArrayBuffer::QueueArrayBuffer(int capacity, Endian systemEndian) : ArrayBuffer(capacity, systemEndian) {
-	//
-}
-
-QueueArrayBuffer::QueueArrayBuffer(void * memPtr, int capacity, int dataSize, Endian systemEndian) : ArrayBuffer(memPtr, capacity, dataSize, systemEndian) {
-	//
-}
-
-QueueArrayBuffer::QueueArrayBuffer(string inputString, Endian systemEndian) : ArrayBuffer(inputString, systemEndian) {
-	//
-}
-
-QueueArrayBuffer::QueueArrayBuffer(int capacity, string inputString, Endian systemEndian) :ArrayBuffer(capacity, inputString, systemEndian) {
-	//
-}
-
+void QueueArrayBuffer::rotateRight(int & index) { index = (index + 1) % (this->capacity); }
+#define INITIALIZE_QUEUE_ARRAY_INDEX this->firstIndex = 0; this->lastIndex = -1;
+QueueArrayBuffer::QueueArrayBuffer(int capacity, Endian systemEndian) : ArrayBuffer(capacity, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
+QueueArrayBuffer::QueueArrayBuffer(void * memPtr, int capacity, int dataSize, Endian systemEndian) : ArrayBuffer(memPtr, capacity, dataSize, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
+QueueArrayBuffer::QueueArrayBuffer(string inputString, Endian systemEndian) : ArrayBuffer(inputString, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
+QueueArrayBuffer::QueueArrayBuffer(int capacity, string inputString, Endian systemEndian) :ArrayBuffer(capacity, inputString, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
 
 QueueArrayBuffer::~QueueArrayBuffer() {
 	if (this->arrayPointer != NULL) {

@@ -271,6 +271,7 @@ inline bool StackArrayBuffer::push(T dataByte) {
 
 class QueueArrayBuffer :public ArrayBuffer, public Queue<uint8_t> {
 	int firstIndex, lastIndex;
+	void rotateRight(int& index);
 public:
 	//Construct this ArrayStackBuffer with the size 'capacity'
 	QueueArrayBuffer(int capacity, Endian systemEndian);
@@ -283,9 +284,35 @@ public:
 	//Destructor: Unallocate all memory.
 	~QueueArrayBuffer();
 	//Methods that will throw exception when error occur (in the case of empty/full queue errors)
+	//Templates for all queue's methods
+	template <typename T> T deQueue();
+	template <typename T> bool enQueue(T input);
+	template <typename T> bool deQueue(T* output);
+	//Methods must be implemented to complete the Queue<uint8_t> interface
 	uint8_t deQueueByte();					//Return the first-joined byte in the queue and then remove it from the queue
-	//Methods that return false when error occur (in the case of empty/full queue errors), output value via a pointer
 	bool enQueueByte(uint8_t dataByte);		//Push a byte to the queue, return true if insertion was OK
 	bool deQueueByte(uint8_t* outputByte);	//Return the first-joined byte in the queue and then remove it from the queue
+	//Queue methods for char
+	
 };
+
+#pragma region QueueArrayBuffer templates
+template<typename T>
+inline T QueueArrayBuffer::deQueue() {
+	//
+	return T();
+}
+
+template<typename T>
+inline bool QueueArrayBuffer::enQueue(T input) {
+	//
+	return false;
+}
+
+template<typename T>
+inline bool QueueArrayBuffer::deQueue(T * output) {
+	//
+	return false;
+}
+#pragma endregion QueueArrayBuffer templates
 #endif // !_BUFFER_H_
