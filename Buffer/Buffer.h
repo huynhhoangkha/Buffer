@@ -147,6 +147,7 @@ inline bool ArrayBuffer::getPrimity(int offset, T * outputObject) {
 }
 #pragma endregion ArrayBuffer templates
 
+#pragma region StackArrayBuffer
 class StackArrayBuffer : public ArrayBuffer, public Stack<uint8_t> {
 public:
 	//Construct this ArrayStackBuffer with the size 'capacity'
@@ -203,6 +204,7 @@ public:
 	bool topDouble(double* output) { return this->top(output); }	//method to get a top double using: bool top(T* output) template
 	bool pushDouble(double input) { return this->push(input); }		//method to push a double using: bool push(T input) template
 };
+#pragma engregion StackArrayBuffer
 
 #pragma region StackArrayBuffer templates
 template<typename T>
