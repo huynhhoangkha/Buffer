@@ -15,13 +15,11 @@ int main() {
 		buffer.deQueue(&c); cout << c << endl; cout << buffer.getString() << endl;
 		buffer.deQueue(&c); cout << c << endl; cout << buffer.getString() << endl;
 		cout << endl << "Size: " << buffer.getSize() << endl;
-		cout << buffer.enQueue('c') << endl;
-		//buffer.enQueue('6'); cout << buffer.getString() << endl;
-		//cout << endl << "Size: " << buffer.getSize() << endl;
-
-		//buffer.enQueue('5'); cout << buffer.getString() << endl;
-		//buffer.enQueue('4'); cout << buffer.getString() << endl;
-		//buffer.enQueue('3'); cout << buffer.getString() << endl;
+		buffer.enQueue('6'); cout << buffer.getString() << endl;
+		buffer.enQueue('5'); cout << buffer.getString() << endl;
+		buffer.enQueue('4'); cout << buffer.getString() << endl;
+		buffer.enQueue('3'); cout << buffer.getString() << endl;
+		cout << endl << "Size: " << buffer.getSize() << endl;
 
 
 	}
