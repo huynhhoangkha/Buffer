@@ -8,8 +8,22 @@ int main() {
 	string msg = "34567";
 	try {
 		char c;
-		StackArrayBuffer buffer(msg, LITTLE_ENDIAN);
-		
+		QueueArrayBuffer buffer(msg, LITTLE_ENDIAN);
+		cout << buffer.getString() << endl;
+		buffer.deQueue(&c); cout << c << endl; cout << buffer.getString() << endl;
+		buffer.deQueue(&c); cout << c << endl; cout << buffer.getString() << endl;
+		buffer.deQueue(&c); cout << c << endl; cout << buffer.getString() << endl;
+		buffer.deQueue(&c); cout << c << endl; cout << buffer.getString() << endl;
+		cout << endl << "Size: " << buffer.getSize() << endl;
+		cout << buffer.enQueue('c') << endl;
+		//buffer.enQueue('6'); cout << buffer.getString() << endl;
+		//cout << endl << "Size: " << buffer.getSize() << endl;
+
+		//buffer.enQueue('5'); cout << buffer.getString() << endl;
+		//buffer.enQueue('4'); cout << buffer.getString() << endl;
+		//buffer.enQueue('3'); cout << buffer.getString() << endl;
+
+
 	}
 	catch (BufferException bE) {
 		cout << bE.getMessage() << endl;

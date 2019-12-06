@@ -292,19 +292,24 @@ public:
 	template <typename T> bool enQueue(T input);
 	template <typename T> bool deQueue(T* output);
 	//Methods must be implemented to complete the Queue<uint8_t> interface
-	bool enQueue(uint8_t dataByte) { return this->enQueue(dataByte); };			//Push a byte to the queue, return true if insertion was OK
-	bool deQueue(uint8_t* outputDataByte) { return this->deQueue(outputDataByte); };	//Return the first-joined byte in the queue and then remove it from the queue
+	bool enQueue(uint8_t dataIn) { return this->enQueue(dataIn); };			//Push a byte to the queue, return true if insertion was OK
+	bool deQueue(uint8_t* dataOut) { return this->deQueue(dataOut); };		//Return the first-joined byte in the queue and then remove it from the queue
 	//Queue methods for char
-	bool enQueueChar(char dataChar) { return this->enQueue(dataChar); };			//Push a char to the queue, return true if insertion was OK
-	bool deQueueChar(char* outputDataChar) { return this->deQueue(outputDataChar); };		//Return the first-joined char in the queue and then remove it from the queue
+	bool enQueueChar(char dataIn) { return this->enQueue(dataIn); };		//Push a char to the queue, return true if insertion was OK
+	bool deQueueChar(char* dataOut) { return this->deQueue(dataOut); };		//Return the first-joined char in the queue and then remove it from the queue
 	//Queue methods for int
-
+	bool enQueueInt(int dataIn) { return this->enQueue(dataIn); };			//Push an int to the queue, return true if insertion was OK
+	bool deQueueInt(int* dataOut) { return this->deQueue(dataOut); };		//Return the first-joined int in the queue and then remove it from the queue
 	//Queue methods for float
-
+	bool enQueueFloat(float dataIn) { return this->enQueue(dataIn); };		//Push a float to the queue, return true if insertion was OK
+	bool deQueueFloat(float* dataOut) { return this->deQueue(dataOut); };	//Return the first-joined float in the queue and then remove it from the queue
 	//Queue methods for long
-
+	bool enQueueLong(long dataIn) { return this->enQueue(dataIn); };		//Push a long to the queue, return true if insertion was OK
+	bool deQueueLong(long* dataOut) { return this->deQueue(dataOut); };		//Return the first-joined long in the queue and then remove it from the queue
 	//Queue methods for double
-	
+	bool enQueueDouble(double dataIn) { return this->enQueue(dataIn); };	//Push a double to the queue, return true if insertion was OK
+	bool deQueueDouble(double* dataOut) { return this->deQueue(dataOut); };	//Return the first-joined double in the queue and then remove it from the queue
+
 };
 #pragma endregion QueueArrayBuffer
 
@@ -312,23 +317,19 @@ public:
 template<typename T>
 inline bool QueueArrayBuffer::enQueue(T input) {
 	if (this->size + sizeof(T) > this->capacity) return false;
-	bool status = this->writePrimity(this->lastIndex + 1, input);
-	if (status == true) {
-		this->lastIndex = (this->lastIndex + sizeof(T)) % this->capacity;
-		this->size += sizeof(T);
-	}
-	return status;
+	//
+	this->lastIndex = (this->lastIndex + sizeof(T)) % this->capacity;
+	this->size += sizeof(T);
+	return true;
 }
 
 template<typename T>
 inline bool QueueArrayBuffer::deQueue(T* output) {
 	if (this->size < sizeof(T)) return false;
-	bool status = this->getPrimity(this->firstIndex, output);
-	if (status == true) {
-		this->firstIndex = (this->firstIndex + sizeof(T)) % this->capacity;
-		this->size = this->size - sizeof(T);
-	}
-	return status;
+	//
+	this->firstIndex = (this->firstIndex + sizeof(T)) % this->capacity;
+	this->size = this->size - sizeof(T);
+	return true;
 }
 
 #pragma endregion QueueArrayBuffer templates

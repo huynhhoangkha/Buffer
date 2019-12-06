@@ -271,11 +271,27 @@ StackArrayBuffer::~StackArrayBuffer() {
 #pragma region QueueArrayBuffer implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: QueueArrayBuffer implementation
-#define INITIALIZE_QUEUE_ARRAY_INDEX this->firstIndex = 0; this->lastIndex = -1;
-QueueArrayBuffer::QueueArrayBuffer(int capacity, Endian systemEndian) : ArrayBuffer(capacity, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
-QueueArrayBuffer::QueueArrayBuffer(void * memPtr, int capacity, int dataSize, Endian systemEndian) : ArrayBuffer(memPtr, capacity, dataSize, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
-QueueArrayBuffer::QueueArrayBuffer(string inputString, Endian systemEndian) : ArrayBuffer(inputString, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
-QueueArrayBuffer::QueueArrayBuffer(int capacity, string inputString, Endian systemEndian) :ArrayBuffer(capacity, inputString, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
+QueueArrayBuffer::QueueArrayBuffer(int capacity, Endian systemEndian) 
+: ArrayBuffer(capacity, systemEndian) {
+	this->firstIndex = 0;
+	this->lastIndex = -1;
+}
+QueueArrayBuffer::QueueArrayBuffer(void* memPtr, int capacity, int dataSize, Endian systemEndian) 
+: ArrayBuffer(memPtr, capacity, dataSize, systemEndian) {
+	this->firstIndex = 0;
+	this->lastIndex = (capacity > dataSize ? dataSize : capacity) - 1;
+}
+QueueArrayBuffer::QueueArrayBuffer(string inputString, Endian systemEndian) 
+: ArrayBuffer(inputString, systemEndian) {
+	this->firstIndex = 0;
+	this->lastIndex = inputString.length() - 1;
+}
+QueueArrayBuffer::QueueArrayBuffer(int capacity, string inputString, Endian systemEndian)
+: ArrayBuffer(capacity, inputString, systemEndian) {
+	this->firstIndex = 0;
+	int len = inputString.length();
+	this->lastIndex = (capacity > len ? len : capacity) - 1;
+}
 
 QueueArrayBuffer::~QueueArrayBuffer() {
 	if (this->arrayPointer != NULL) {
