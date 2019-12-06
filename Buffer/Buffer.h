@@ -341,7 +341,7 @@ inline bool QueueArrayBuffer::deQueue(T* dataOut) {
 		this->rotateRight(this->firstIndex);
 	}
 	else if (this->endian == LITTLE_ENDIAN) {
-		uint8_t* ptr = ((uint8_t*)&dataIn) + sizeof(T) - 1;
+		uint8_t* ptr = ((uint8_t*)&dataOut) + sizeof(T) - 1;
 		for (int i = 0; i < sizeof(T); i++) *(ptr--) = this->arrayPointer[this->firstIndex];
 		this->rotateRight(this->firstIndex);
 	}
