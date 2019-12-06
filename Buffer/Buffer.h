@@ -269,6 +269,7 @@ inline bool StackArrayBuffer::push(T dataByte) {
 
 #pragma endregion StackArrayBuffer templates
 
+#pragma region QueueArrayBuffer
 class QueueArrayBuffer :public ArrayBuffer, public Queue<uint8_t> {
 	int firstIndex, lastIndex;
 	void rotateRight(int& index);
@@ -293,8 +294,17 @@ public:
 	bool enQueueByte(uint8_t dataByte);		//Push a byte to the queue, return true if insertion was OK
 	bool deQueueByte(uint8_t* outputByte);	//Return the first-joined byte in the queue and then remove it from the queue
 	//Queue methods for char
+
+	//Queue methods for int
+
+	//Queue methods for float
+
+	//Queue methods for long
+
+	//Queue methods for double
 	
 };
+#pragma endregion QueueArrayBuffer
 
 #pragma region QueueArrayBuffer templates
 template<typename T>
