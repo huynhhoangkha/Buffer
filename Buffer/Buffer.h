@@ -275,6 +275,7 @@ inline bool StackArrayBuffer::push(T dataByte) {
 #pragma region QueueArrayBuffer
 class QueueArrayBuffer :public ArrayBuffer, public Queue<uint8_t> {
 	int firstIndex, lastIndex;
+	int& rotateRight(int& index) { return index = (index + 1) % this->capacity; };
 public:
 	//Construct this ArrayStackBuffer with the size 'capacity'
 	QueueArrayBuffer(int capacity, Endian systemEndian);
@@ -313,22 +314,38 @@ public:
 };
 #pragma endregion QueueArrayBuffer
 
+
 #pragma region QueueArrayBuffer templates
 template<typename T>
-inline bool QueueArrayBuffer::enQueue(T input) {
+inline bool QueueArrayBuffer::enQueue(T dataIn) {
 	if (this->size + sizeof(T) > this->capacity) return false;
-	//
-	this->lastIndex = (this->lastIndex + sizeof(T)) % this->capacity;
+	if (this->endian == NOT_SET) return false;
+	else if (this->endian == BIG_ENDIAN) {
+		uint8_t* ptr = (uint8_t*)&dataIn;
+		for (int i = 0; i < sizeof(T); i++) this->arrayPointer[this->rotateRight(this->lastIndex)] = *(ptr++);
+	}
+	else if (this->endian == LITTLE_ENDIAN) {
+		uint8_t* ptr = ((uint8_t*)&dataIn) + sizeof(T) - 1;
+		for (int i = 0; i < sizeof(T); i++) this->arrayPointer[this->rotateRight(this->lastIndex)] = *(ptr--);
+	}
 	this->size += sizeof(T);
 	return true;
 }
 
 template<typename T>
-inline bool QueueArrayBuffer::deQueue(T* output) {
-	if (this->size < sizeof(T)) return false;
-	//
-	this->firstIndex = (this->firstIndex + sizeof(T)) % this->capacity;
-	this->size = this->size - sizeof(T);
+inline bool QueueArrayBuffer::deQueue(T* dataOut) {
+	if (this->size < sizeof(T) || this->endian == NOT_SET) return false;
+	if (this->endian == BIG_ENDIAN) {
+		uint8_t* ptr = (uint8_t*)dataOut;
+		for (int i = 0; i < sizeof(T); i++) *(ptr++) = this->arrayPointer[this->firstIndex];
+		this->rotateRight(this->firstIndex);
+	}
+	else if (this->endian == LITTLE_ENDIAN) {
+		uint8_t* ptr = ((uint8_t*)&dataIn) + sizeof(T) - 1;
+		for (int i = 0; i < sizeof(T); i++) *(ptr--) = this->arrayPointer[this->firstIndex];
+		this->rotateRight(this->firstIndex);
+	}
+	this->size -= sizeof(T);
 	return true;
 }
 
