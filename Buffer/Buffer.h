@@ -204,7 +204,7 @@ public:
 	bool topDouble(double* output) { return this->top(output); }	//method to get a top double using: bool top(T* output) template
 	bool pushDouble(double input) { return this->push(input); }		//method to push a double using: bool push(T input) template
 };
-#pragma engregion StackArrayBuffer
+#pragma endregion StackArrayBuffer
 
 #pragma region StackArrayBuffer templates
 template<typename T>
