@@ -17,6 +17,7 @@ enum Endian {
 };
 
 enum ExceptionErrorCode {
+	EMPTY_INITIALIZATION_STRING,
 	NEGATIVE_CAPACITY,
 	NEGATIVE_SIZE,
 	SIZE_BIGGER_THAN_CAPACITY,
@@ -274,7 +275,6 @@ inline bool StackArrayBuffer::push(T dataByte) {
 #pragma region QueueArrayBuffer
 class QueueArrayBuffer :public ArrayBuffer, public Queue<uint8_t> {
 	int firstIndex, lastIndex;
-	void rotateRight(int& index);
 public:
 	//Construct this ArrayStackBuffer with the size 'capacity'
 	QueueArrayBuffer(int capacity, Endian systemEndian);
@@ -286,17 +286,17 @@ public:
 	QueueArrayBuffer(int capacity, string inputString, Endian systemEndian);
 	//Destructor: Unallocate all memory.
 	~QueueArrayBuffer();
-	//Methods that will throw exception when error occur (in the case of empty/full queue errors)
+	//Override getString method
+	string getString();
 	//Templates for all queue's methods
-	template <typename T> T deQueue();
 	template <typename T> bool enQueue(T input);
 	template <typename T> bool deQueue(T* output);
 	//Methods must be implemented to complete the Queue<uint8_t> interface
-	uint8_t deQueueByte();					//Return the first-joined byte in the queue and then remove it from the queue
-	bool enQueueByte(uint8_t dataByte);		//Push a byte to the queue, return true if insertion was OK
-	bool deQueueByte(uint8_t* outputByte);	//Return the first-joined byte in the queue and then remove it from the queue
+	bool enQueue(uint8_t dataByte) { return this->enQueue(dataByte); };			//Push a byte to the queue, return true if insertion was OK
+	bool deQueue(uint8_t* outputDataByte) { return this->deQueue(outputDataByte); };	//Return the first-joined byte in the queue and then remove it from the queue
 	//Queue methods for char
-
+	bool enQueueChar(char dataChar) { return this->enQueue(dataChar); };			//Push a char to the queue, return true if insertion was OK
+	bool deQueueChar(char* outputDataChar) { return this->deQueue(outputDataChar); };		//Return the first-joined char in the queue and then remove it from the queue
 	//Queue methods for int
 
 	//Queue methods for float
@@ -310,21 +310,26 @@ public:
 
 #pragma region QueueArrayBuffer templates
 template<typename T>
-inline T QueueArrayBuffer::deQueue() {
-	//
-	return T();
-}
-
-template<typename T>
 inline bool QueueArrayBuffer::enQueue(T input) {
-	//
-	return false;
+	if (this->size + sizeof(T) > this->capacity) return false;
+	bool status = this->writePrimity(this->lastIndex + 1, input);
+	if (status == true) {
+		this->lastIndex = (this->lastIndex + sizeof(T)) % this->capacity;
+		this->size += sizeof(T);
+	}
+	return status;
 }
 
 template<typename T>
-inline bool QueueArrayBuffer::deQueue(T * output) {
-	//
-	return false;
+inline bool QueueArrayBuffer::deQueue(T* output) {
+	if (this->size < sizeof(T)) return false;
+	bool status = this->getPrimity(this->firstIndex, output);
+	if (status == true) {
+		this->firstIndex = (this->firstIndex + sizeof(T)) % this->capacity;
+		this->size = this->size - sizeof(T);
+	}
+	return status;
 }
+
 #pragma endregion QueueArrayBuffer templates
 #endif // !_BUFFER_H_

@@ -5,7 +5,6 @@
 template <class T>
 class Queue {
 public:
-	virtual T deQueue() = 0;
 	virtual bool deQueue(T* dataPtr) = 0;
 	virtual bool enQueue(T data) = 0;
 };

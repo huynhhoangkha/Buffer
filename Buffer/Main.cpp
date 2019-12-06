@@ -5,26 +5,11 @@
 using namespace std;
 
 int main() {
-	string msg = "Huynh Hoang Kha";
+	string msg = "34567";
 	try {
-		StackArrayBuffer aSB(msg, LITTLE_ENDIAN);
-		cout << aSB.getString() << endl;
-		cout << aSB.getCapacity() << endl;
-		cout << aSB.getSize() << endl;
-		aSB.push('C');
-		cout << aSB.getString() << endl;
-		cout << aSB.getCapacity() << endl;
-		cout << aSB.getSize() << endl;
 		char c;
-		cout << aSB.top(&c) << endl;
-		cout << aSB.getString() << endl;
-		cout << aSB.getCapacity() << endl;
-		cout << aSB.getSize() << endl;
-		cout << aSB.pop(&c) << endl;
-		cout << aSB.getString() << endl;
-		cout << aSB.getCapacity() << endl;
-		cout << aSB.getSize() << endl;
-		cout << aSB.popInt() << endl;
+		StackArrayBuffer buffer(msg, LITTLE_ENDIAN);
+		
 	}
 	catch (BufferException bE) {
 		cout << bE.getMessage() << endl;

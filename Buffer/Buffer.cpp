@@ -85,11 +85,13 @@ ArrayBuffer::ArrayBuffer(void * memPtr, int capacity, int dataSize, Endian syste
 }
 
 ArrayBuffer::ArrayBuffer(string inputString, Endian systemEndian) {
-	this->size = inputString.length();
-	this->capacity = this->size + 1;
+	if (inputString.length() == 0) {
+		BufferException bE(EMPTY_INITIALIZATION_STRING, "Cannot initialize a buffer with a null string");
+		throw bE;
+	}
+	this->capacity = (this->size = inputString.length());
 	this->arrayPointer = NULL;
 	while (this->arrayPointer == NULL) this->arrayPointer = new uint8_t[this->capacity];
-	this->arrayPointer[this->size] = '\0';
 	for (int i = 0; i < this->size; i++) this->arrayPointer[i] = inputString[i];
 	this->endian = systemEndian;
 }
@@ -146,7 +148,11 @@ uint8_t & ArrayBuffer::operator[](int index) {
 	return this->arrayPointer[index];
 }
 
-string ArrayBuffer::getString() {return string((char*)this->arrayPointer);}
+string ArrayBuffer::getString() {
+	string result;
+	for (int i = 0; i < this->size; i++) result.push_back((char)this->arrayPointer[i]);
+	return result;
+}
 
 int ArrayBuffer::getInt(int offset) {
 	int data = 0;
@@ -265,7 +271,6 @@ StackArrayBuffer::~StackArrayBuffer() {
 #pragma region QueueArrayBuffer implementation
 //------------------------------------------------------------------------------------------------------------
 //Section: QueueArrayBuffer implementation
-void QueueArrayBuffer::rotateRight(int & index) { index = (index + 1) % (this->capacity); }
 #define INITIALIZE_QUEUE_ARRAY_INDEX this->firstIndex = 0; this->lastIndex = -1;
 QueueArrayBuffer::QueueArrayBuffer(int capacity, Endian systemEndian) : ArrayBuffer(capacity, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
 QueueArrayBuffer::QueueArrayBuffer(void * memPtr, int capacity, int dataSize, Endian systemEndian) : ArrayBuffer(memPtr, capacity, dataSize, systemEndian) { INITIALIZE_QUEUE_ARRAY_INDEX }
@@ -279,29 +284,14 @@ QueueArrayBuffer::~QueueArrayBuffer() {
 	}
 }
 
-uint8_t QueueArrayBuffer::deQueueByte() {
-	//
-	return uint8_t();
-}
-
-bool QueueArrayBuffer::enQueueByte(uint8_t dataByte) {
-	//
-	return false;
-}
-
-bool QueueArrayBuffer::deQueueByte(uint8_t * outputByte) {
-	//
-	return false;
+string QueueArrayBuffer::getString() {
+	string result;
+	int tempIdx = this->firstIndex;
+	for (int i = 0; i < this->size; i++) {
+		result.push_back((char)this->arrayPointer[tempIdx]);
+		tempIdx = (tempIdx + 1) % this->capacity;
+	}
+	return result;
 }
 //Endsection: QueueArrayBuffer implementation
 #pragma endregion QueueArrayBuffer implementation
-
-//------------------------------------------------------------------------------------------------------------
-//Section:  implementation
-
-//Endsection:  implementation
-
-//------------------------------------------------------------------------------------------------------------
-//Section:  implementation
-
-//Endsection:  implementation
